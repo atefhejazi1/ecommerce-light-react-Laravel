@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
+
 class CategoryController extends Controller
 {
     /**
@@ -13,7 +14,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return Category::all();
+        $catgories =  Category::all();
+
+        return response()->json([
+            "data" => $catgories,
+        ], 200);
     }
 
     /**
@@ -21,7 +26,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "name" => "required|string|max:255",
+            "description" => "nullable|string",
+        ]);
+
+        Category::create([
+            "name" => $request->name,
+            "description" => $request->description,
+        ]);
+
+        return response()->json([
+            "message" => "Category created successfully",
+        ], 201);
     }
 
     /**
