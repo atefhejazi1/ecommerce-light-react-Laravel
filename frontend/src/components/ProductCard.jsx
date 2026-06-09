@@ -4,7 +4,7 @@ export default function ProductCard({ product }) {
       {/* Image */}
       <div className="relative overflow-hidden h-48 bg-gray-200">
         <img
-          src={product.image}
+          src={`http://127.0.0.1:8000/storage/${product.image}`}
           alt={product.name}
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
@@ -22,7 +22,7 @@ export default function ProductCard({ product }) {
         {/* Price and Button */}
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold text-purple-600">
-            ${product.price.toFixed(2)}
+            ${product.price}
           </span>
           <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition font-medium">
             Add to Cart

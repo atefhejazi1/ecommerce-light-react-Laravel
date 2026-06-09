@@ -5,7 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -29,11 +30,20 @@ class CategoryController extends Controller
         $request->validate([
             "name" => "required|string|max:255",
             "description" => "nullable|string",
+            "image" => "nullable|image|mimes:jpg,jpeg,png,webp|max:2048",
         ]);
+
+        $path = null;
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('categories', 'public');
+        }
 
         Category::create([
             "name" => $request->name,
+            "slug" => Str::slug($request->name),
             "description" => $request->description,
+            "image" => $path,
         ]);
 
         return response()->json([

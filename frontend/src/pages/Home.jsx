@@ -1,10 +1,31 @@
 import { Link } from "react-router";
 import ProductCard from "../components/ProductCard";
 import { categories, products } from "../data";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 8);
-  const previewCategories = categories.slice(0, 4);
+  // const featuredProducts = products.slice(0, 8);
+  // const previewCategories = categories.slice(0, 4);
+
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [previewCategories, setPreviewCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/categories")
+      .then((res) => res.json())
+      .then((data) => setPreviewCategories(data.data))
+      .catch((err) => console.error("Error fetching categories:", err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/products/")
+      .then((res) => res.json())
+      .then((data) => setFeaturedProducts(data.data))
+      .catch((err) => console.error("Error fetching products:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -40,33 +61,39 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {previewCategories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/categories/${category.id}`}
-              className="group cursor-pointer"
-            >
-              <div className="relative overflow-hidden rounded-lg h-48 mb-4">
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-40 transition-all duration-300"></div>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition">
-                {category.name}
-              </h3>
-              <p className="text-gray-600 text-sm">{category.description}</p>
-            </Link>
-          ))}
+          {loading
+            ? "loading ..."
+            : previewCategories.map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/categories/${category.id}`}
+                  className="group cursor-pointer"
+                >
+                  <div className="relative overflow-hidden rounded-lg h-48 mb-4">
+                    <img
+                      src={`http://127.0.0.1:8000/storage/${category.image}`}
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black opacity-50 group-hover:bg-opacity-40 transition-all duration-300"></div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition">
+                    {category.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {category.description}
+                  </p>
+                </Link>
+              ))}
         </div>
       </section>
 
       {/* Featured Products */}
       <section className="max-w-7xl mx-auto px-4 py-16 bg-gray-50 rounded-lg">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-4xl font-bold text-gray-900">Featured Products</h2>
+          <h2 className="text-4xl font-bold text-gray-900">
+            Featured Products
+          </h2>
           <Link
             to="/products"
             className="text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-2"
@@ -77,9 +104,11 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {loading
+            ? "loading ..."
+            : featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
         </div>
       </section>
 
